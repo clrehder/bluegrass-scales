@@ -7,10 +7,128 @@
   <meta name="theme-color" content="#0b3d2e">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    :root {
+      --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22c55e;
+      --accent2:#60a5fa; --warning:#f59e0b;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: linear-gradient(180deg,#0b1220 0%, #0f172a 100%); }
+    header { padding: 16px; position: sticky; top:0; backdrop-filter: blur(6px); background: rgba(15,23,42,0.7); border-bottom: 1px solid #1f2937; z-index: 5;}
+    h1 { margin: 0; font-size: 20px; letter-spacing:.3px; }
+    #app { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .card { background: var(--panel); border: 1px solid #1f2937; border-radius: 14px; padding: 14px; margin: 12px 0; }
+    .row { display:flex; gap:12px; flex-wrap: wrap; }
+    .row > * { flex: 1 1 240px; }
+    label { font-size: 12px; color: var(--muted); display:block; margin-bottom:6px;}
+    select, input[type=range] { width: 100%; }
+    select, button {
+      appearance:none; border-radius:10px; padding:10px 12px; background:#0b1628; color:var(--ink); border:1px solid #1f2937;
+    }
+    button { cursor:pointer; font-weight:600; }
+    button.primary { background: linear-gradient(90deg, #22c55e, #60a5fa); color:#0b1220; border: none; }
+    button.ghost { background: #0b1628; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#0b1628; border:1px solid #1f2937; color:var(--muted); font-size:12px; }
+    #fretboard { width:100%; height:280px; background:#0b1628; border-radius:14px; display:block; }
+    .legend { font-size:12px; color:var(--muted); display:flex; gap:12px; flex-wrap: wrap; }
+    .legend .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; vertical-align:middle; margin-right:6px; }
+    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width:720px) { #fretboard { height: 320px; } .grid-2 { grid-template-columns: 1fr; } }
+    footer { padding: 24px; text-align:center; color: var(--muted); }
+  </style>
 </head>
 <body>
-  <h1>🎻 Bluegrass Scale Trainer</h1>
-  <p>This is the starter for the app. Open on iPhone Safari, then Add to Home Screen.</p>
+  <header>
+    <h1>🎻 Bluegrass Scale Trainer</h1>
+    <div class="pill">Works offline • Add to Home Screen</div>
+  </header>
+  <div id="app">
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>Key</label>
+          <select id="keySel">
+            <option>G</option>
+            <option>A</option>
+            <option>C</option>
+            <option>D</option>
+            <option>E</option>
+          </select>
+        </div>
+        <div>
+          <label>Scale / Flavor</label>
+          <select id="scaleSel">
+            <option value="major">Major</option>
+            <option value="mixolydian">Mixolydian (bluegrass V)</option>
+            <option value="majorPent">Major Pentatonic</option>
+            <option value="blues">Blues (hexatonic)</option>
+          </select>
+        </div>
+        <div>
+          <label>Progression</label>
+          <select id="progSel">
+            <option value="I-IV-V">I • IV • V (12-bar)</option>
+            <option value="I-V">I • V (8-bar)</option>
+            <option value="drone">I chord drone</option>
+          </select>
+        </div>
+        <div>
+          <label>Tempo (BPM)</label>
+          <input id="tempo" min="60" max="220" step="1" type="range" value="120">
+          <div><span id="tempoOut">120</span> bpm</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <canvas id="fretboard"></canvas>
+      <div class="legend">
+        <div><span class="swatch" style="background: var(--accent);"></span> Scale note</div>
+        <div><span class="swatch" style="background: var(--accent2);"></span> Root note</div>
+        <div><span class="swatch" style="background: var(--warning);"></span> Chord tones</div>
+      </div>
+    </div>
+
+    <div class="card grid-2">
+      <div>
+        <h3>🪕 Backing Track</h3>
+        <p>Play along with a boom‑chick groove. Switch keys/scales to see safe notes. Tip: Aim for chord tones (gold) on strong beats.</p>
+        <div class="row">
+          <button id="playBtn" class="primary">Play</button>
+          <button id="stopBtn" class="ghost">Stop</button>
+        </div>
+      </div>
+      <div>
+        <h3>🎯 Licks Trainer</h3>
+        <p>Tap <em>Generate</em> for a two‑bar lick using the selected scale. Use it over the I chord, then move it for IV/V.</p>
+        <div class="row">
+          <button id="lickBtn" class="ghost">Generate</button>
+          <button id="copyTab" class="ghost">Copy TAB</button>
+        </div>
+        <pre id="tab" style="background:#0b1628;border:1px solid #1f2937;border-radius:10px;padding:10px;overflow:auto;white-space:pre;"></pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to practice</h3>
+      <ol>
+        <li>Select a <strong>Key</strong> (bluegrass favorites: G, A, C, D).</li>
+        <li>Pick a <strong>Scale</strong> flavor. Mixolydian works great on V chords; Major Pentatonic is extra “country”.</li>
+        <li>Start the <strong>Backing Track</strong>. Target <span style="color:#f59e0b">chord tones</span> on downbeats.</li>
+        <li>Use the <strong>Licks Trainer</strong> and move shapes up 2 frets for A (from G), etc.</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer>© 2025 Bluegrass Scale Trainer • Made for guitar (EADGBE). PWA: add to Home Screen.</footer>
+
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js');
+      });
+    }
+  </script>
 </body>
 </html>

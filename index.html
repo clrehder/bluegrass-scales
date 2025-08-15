@@ -1,134 +1,342 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>Bluegrass Scale Trainer</title>
-  <meta name="theme-color" content="#0b3d2e">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <style>
-    :root {
-      --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22c55e;
-      --accent2:#60a5fa; --warning:#f59e0b;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: linear-gradient(180deg,#0b1220 0%, #0f172a 100%); }
-    header { padding: 16px; position: sticky; top:0; backdrop-filter: blur(6px); background: rgba(15,23,42,0.7); border-bottom: 1px solid #1f2937; z-index: 5;}
-    h1 { margin: 0; font-size: 20px; letter-spacing:.3px; }
-    #app { max-width: 980px; margin: 0 auto; padding: 16px; }
-    .card { background: var(--panel); border: 1px solid #1f2937; border-radius: 14px; padding: 14px; margin: 12px 0; }
-    .row { display:flex; gap:12px; flex-wrap: wrap; }
-    .row > * { flex: 1 1 240px; }
-    label { font-size: 12px; color: var(--muted); display:block; margin-bottom:6px;}
-    select, input[type=range] { width: 100%; }
-    select, button {
-      appearance:none; border-radius:10px; padding:10px 12px; background:#0b1628; color:var(--ink); border:1px solid #1f2937;
-    }
-    button { cursor:pointer; font-weight:600; }
-    button.primary { background: linear-gradient(90deg, #22c55e, #60a5fa); color:#0b1220; border: none; }
-    button.ghost { background: #0b1628; }
-    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#0b1628; border:1px solid #1f2937; color:var(--muted); font-size:12px; }
-    #fretboard { width:100%; height:280px; background:#0b1628; border-radius:14px; display:block; }
-    .legend { font-size:12px; color:var(--muted); display:flex; gap:12px; flex-wrap: wrap; }
-    .legend .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; vertical-align:middle; margin-right:6px; }
-    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width:720px) { #fretboard { height: 320px; } .grid-2 { grid-template-columns: 1fr; } }
-    footer { padding: 24px; text-align:center; color: var(--muted); }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Bluegrass Scale Trainer (Diagnostic)</title>
+<meta name="theme-color" content="#0b3d2e" />
+<style>
+  :root {
+    --bg:#0f172a; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#22c55e;
+    --accent2:#60a5fa; --warning:#f59e0b;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: linear-gradient(180deg,#0b1220 0%, #0f172a 100%); }
+  header { padding: 16px; position: sticky; top:0; backdrop-filter: blur(6px); background: rgba(15,23,42,0.7); border-bottom: 1px solid #1f2937; z-index: 5;}
+  h1 { margin: 0; font-size: 20px; letter-spacing:.3px; }
+  #app { max-width: 980px; margin: 0 auto; padding: 16px; }
+  .card { background: var(--panel); border: 1px solid #1f2937; border-radius: 14px; padding: 14px; margin: 12px 0; }
+  .row { display:flex; gap:12px; flex-wrap: wrap; }
+  .row > * { flex: 1 1 240px; }
+  label { font-size: 12px; color: var(--muted); display:block; margin-bottom:6px;}
+  select, input[type=range] { width: 100%; }
+  select, button {
+    appearance:none; border-radius:10px; padding:10px 12px; background:#0b1628; color:var(--ink); border:1px solid #1f2937;
+  }
+  button { cursor:pointer; font-weight:600; }
+  button.primary { background: linear-gradient(90deg, #22c55e, #60a5fa); color:#0b1220; border: none; }
+  button.ghost { background: #0b1628; }
+  .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#0b1628; border:1px solid #1f2937; color:var(--muted); font-size:12px; }
+  #fretboard { width:100%; height:300px; background:#0b1628; border-radius:14px; display:block; }
+  .legend { font-size:12px; color:var(--muted); display:flex; gap:12px; flex-wrap: wrap; }
+  .legend .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; vertical-align:middle; margin-right:6px; }
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  @media (max-width:720px) { #fretboard { height: 340px; } .grid-2 { grid-template-columns: 1fr; } }
+  footer { padding: 24px; text-align:center; color: var(--muted); }
+</style>
 </head>
 <body>
-  <header>
-    <h1>🎻 Bluegrass Scale Trainer</h1>
-    <div class="pill">Works offline • Add to Home Screen</div>
-  </header>
-  <div id="app">
-    <div class="card">
-      <div class="row">
-        <div>
-          <label>Key</label>
-          <select id="keySel">
-            <option>G</option>
-            <option>A</option>
-            <option>C</option>
-            <option>D</option>
-            <option>E</option>
-          </select>
-        </div>
-        <div>
-          <label>Scale / Flavor</label>
-          <select id="scaleSel">
-            <option value="major">Major</option>
-            <option value="mixolydian">Mixolydian (bluegrass V)</option>
-            <option value="majorPent">Major Pentatonic</option>
-            <option value="blues">Blues (hexatonic)</option>
-          </select>
-        </div>
-        <div>
-          <label>Progression</label>
-          <select id="progSel">
-            <option value="I-IV-V">I • IV • V (12-bar)</option>
-            <option value="I-V">I • V (8-bar)</option>
-            <option value="drone">I chord drone</option>
-          </select>
-        </div>
-        <div>
-          <label>Tempo (BPM)</label>
-          <input id="tempo" min="60" max="220" step="1" type="range" value="120">
-          <div><span id="tempoOut">120</span> bpm</div>
-        </div>
-      </div>
-    </div>
+<header>
+  <h1>🎻 Bluegrass Scale Trainer</h1>
+  <div class="pill">Diagnostic build (no service worker)</div>
+</header>
 
-    <div class="card">
-      <canvas id="fretboard"></canvas>
-      <div class="legend">
-        <div><span class="swatch" style="background: var(--accent);"></span> Scale note</div>
-        <div><span class="swatch" style="background: var(--accent2);"></span> Root note</div>
-        <div><span class="swatch" style="background: var(--warning);"></span> Chord tones</div>
-      </div>
-    </div>
-
-    <div class="card grid-2">
+<div id="app">
+  <div class="card">
+    <div class="row">
       <div>
-        <h3>🪕 Backing Track</h3>
-        <p>Play along with a boom‑chick groove. Switch keys/scales to see safe notes. Tip: Aim for chord tones (gold) on strong beats.</p>
-        <div class="row">
-          <button id="playBtn" class="primary">Play</button>
-          <button id="stopBtn" class="ghost">Stop</button>
-        </div>
+        <label>Key</label>
+        <select id="keySel">
+          <option>G</option><option>A</option><option>C</option><option>D</option><option>E</option>
+        </select>
       </div>
       <div>
-        <h3>🎯 Licks Trainer</h3>
-        <p>Tap <em>Generate</em> for a two‑bar lick using the selected scale. Use it over the I chord, then move it for IV/V.</p>
-        <div class="row">
-          <button id="lickBtn" class="ghost">Generate</button>
-          <button id="copyTab" class="ghost">Copy TAB</button>
-        </div>
-        <pre id="tab" style="background:#0b1628;border:1px solid #1f2937;border-radius:10px;padding:10px;overflow:auto;white-space:pre;"></pre>
+        <label>Scale / Flavor</label>
+        <select id="scaleSel">
+          <option value="major">Major</option>
+          <option value="mixolydian">Mixolydian (bluegrass V)</option>
+          <option value="majorPent">Major Pentatonic</option>
+          <option value="blues">Blues (hexatonic)</option>
+        </select>
       </div>
-    </div>
-
-    <div class="card">
-      <h3>How to practice</h3>
-      <ol>
-        <li>Select a <strong>Key</strong> (bluegrass favorites: G, A, C, D).</li>
-        <li>Pick a <strong>Scale</strong> flavor. Mixolydian works great on V chords; Major Pentatonic is extra “country”.</li>
-        <li>Start the <strong>Backing Track</strong>. Target <span style="color:#f59e0b">chord tones</span> on downbeats.</li>
-        <li>Use the <strong>Licks Trainer</strong> and move shapes up 2 frets for A (from G), etc.</li>
-      </ol>
+      <div>
+        <label>Progression</label>
+        <select id="progSel">
+          <option value="I-IV-V">I • IV • V (12-bar)</option>
+          <option value="I-V">I • V (8-bar)</option>
+          <option value="drone">I chord drone</option>
+        </select>
+      </div>
+      <div>
+        <label>Tempo (BPM)</label>
+        <input id="tempo" min="60" max="220" step="1" type="range" value="120">
+        <div><span id="tempoOut">120</span> bpm</div>
+      </div>
     </div>
   </div>
 
-  <footer>© 2025 Bluegrass Scale Trainer • Made for guitar (EADGBE). PWA: add to Home Screen.</footer>
+  <div class="card">
+    <canvas id="fretboard"></canvas>
+    <div class="legend">
+      <div><span class="swatch" style="background: #22c55e;"></span> Scale note</div>
+      <div><span class="swatch" style="background: #60a5fa;"></span> Root note</div>
+      <div><span class="swatch" style="background: #f59e0b;"></span> Chord tones</div>
+    </div>
+  </div>
 
-  <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js');
-      });
+  <div class="card grid-2">
+    <div>
+      <h3>🪕 Backing Track</h3>
+      <p>Tap <strong>Play</strong> (audio only starts after a user tap on iOS). If silent, flip the ringer switch off “Silent”.</p>
+      <div class="row">
+        <button id="playBtn" class="primary">Play</button>
+        <button id="stopBtn" class="ghost">Stop</button>
+      </div>
+    </div>
+    <div>
+      <h3>🎯 Licks Trainer</h3>
+      <p>Tap <em>Generate</em> for a two-bar lick; use over the I chord, then shift for IV/V.</p>
+      <div class="row">
+        <button id="lickBtn" class="ghost">Generate</button>
+        <button id="copyTab" class="ghost">Copy TAB</button>
+      </div>
+      <pre id="tab" style="background:#0b1628;border:1px solid #1f2937;border-radius:10px;padding:10px;overflow:auto;white-space:pre;"></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How to practice</h3>
+    <ol>
+      <li>Select a <strong>Key</strong> (G/A/C/D are bluegrass favorites).</li>
+      <li>Pick a <strong>Scale</strong>. Mixolydian for V chords; Major Pent for “country”.</li>
+      <li>Hit <strong>Play</strong>. Land on <span style="color:#f59e0b">chord tones</span> on strong beats.</li>
+      <li>Use the <strong>Licks Trainer</strong> then move shapes up/down for IV/V.</li>
+    </ol>
+  </div>
+</div>
+
+<footer>© 2025 • Diagnostic build</footer>
+
+<script>
+/* ---------- UI refs ---------- */
+const fretCanvas = document.getElementById('fretboard');
+const ctx = fretCanvas.getContext('2d');
+const keySel = document.getElementById('keySel');
+const scaleSel = document.getElementById('scaleSel');
+const progSel = document.getElementById('progSel');
+const tempo = document.getElementById('tempo');
+const tempoOut = document.getElementById('tempoOut');
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
+const lickBtn = document.getElementById('lickBtn');
+const copyTabBtn = document.getElementById('copyTab');
+const tabEl = document.getElementById('tab');
+
+tempo.addEventListener('input', () => tempoOut.textContent = tempo.value);
+
+/* ---------- Theory helpers ---------- */
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const TUNING = ['E2','A2','D3','G3','B3','E4']; // low->high
+
+function noteToMidi(n){
+  const name = n.slice(0,-1);
+  const oct = parseInt(n.slice(-1));
+  return 12*(oct+1)+NOTE_NAMES.indexOf(name);
+}
+function pcOf(name){ return NOTE_NAMES.indexOf(name); }
+
+const SCALES = {
+  major:        [0,2,4,5,7,9,11],
+  mixolydian:   [0,2,4,5,7,9,10],
+  majorPent:    [0,2,4,7,9],
+  blues:        [0,3,5,6,7,10]
+};
+const CHORD_TONES = { major:[0,4,7], dominant7:[0,4,7,10] };
+
+function buildScaleSet(key, scale){
+  const rootPC = pcOf(key);
+  return { pcs: new Set(SCALES[scale].map(i => (rootPC + i) % 12)), rootPC };
+}
+function chordTonesFor(degree, key){
+  const rootPC = pcOf(key);
+  let offset = 0, tones = CHORD_TONES.major;
+  if(degree==='IV'){ offset = 5; tones = CHORD_TONES.major; }
+  if(degree==='V'){ offset = 7; tones = CHORD_TONES.dominant7; }
+  return new Set(tones.map(i => (rootPC + offset + i) % 12));
+}
+
+/* ---------- Fretboard drawing ---------- */
+let frets = 16;
+function resizeCanvas(){
+  const r = window.devicePixelRatio || 1;
+  fretCanvas.width = fretCanvas.clientWidth * r;
+  fretCanvas.height = fretCanvas.clientHeight * r;
+  ctx.setTransform(r,0,0,r,0,0);
+  refresh();
+}
+window.addEventListener('resize', resizeCanvas);
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function drawFretboard(scaleSet, rootPC, chordTones){
+  const w = fretCanvas.clientWidth, h = fretCanvas.clientHeight;
+  ctx.clearRect(0,0,w,h);
+  const margin = 20, fbW = w - margin*2, fbH = h - margin*2;
+
+  roundRect(ctx, margin, margin, fbW, fbH, 12);
+  ctx.fillStyle = '#0b1628'; ctx.fill();
+
+  ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 2;
+  for(let f=0; f<=frets; f++){
+    const x = margin + fbW * (f/frets);
+    ctx.beginPath(); ctx.moveTo(x, margin); ctx.lineTo(x, margin+fbH); ctx.stroke();
+    if([3,5,7,9,12,15].includes(f)){
+      ctx.fillStyle = '#0e7490';
+      ctx.beginPath(); ctx.arc(x-2, margin+fbH/2, f===12?6:4, 0, Math.PI*2); ctx.fill();
     }
-  </script>
+  }
+
+  for(let s=0; s<6; s++){
+    const y = margin + fbH * (s/(6-1));
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 2 + (5-s)*0.3;
+    ctx.beginPath(); ctx.moveTo(margin, y); ctx.lineTo(margin+fbW, y); ctx.stroke();
+  }
+
+  for(let s=0; s<6; s++){
+    const openMidi = noteToMidi(TUNING[s]);
+    for(let f=0; f<=frets; f++){
+      const m = openMidi + f, pc = m % 12;
+      if(scaleSet.has(pc)){
+        const x = margin + fbW * (f/frets);
+        const y = margin + fbH * (s/5);
+        const isRoot = (pc === rootPC);
+        const isChordTone = chordTones.has(pc);
+        ctx.fillStyle = isRoot ? '#60a5fa' : (isChordTone ? '#f59e0b' : '#22c55e');
+        ctx.beginPath(); ctx.arc(x, y, isRoot?10:8, 0, Math.PI*2); ctx.fill();
+      }
+    }
+  }
+}
+
+function refresh(){
+  const key = keySel.value;
+  const scale = scaleSel.value;
+  const {pcs, rootPC} = buildScaleSet(key, scale);
+  const chords = chordTonesFor('I', key);
+  drawFretboard(pcs, rootPC, chords);
+}
+
+[keySel, scaleSel].forEach(el => el.addEventListener('change', refresh));
+resizeCanvas();
+
+/* ---------- Lick generator ---------- */
+function generateLick(){
+  const key = keySel.value, scale = scaleSel.value, rootPC = pcOf(key);
+  const pcs = SCALES[scale].map(i => (rootPC + i) % 12);
+  const pool = [];
+  for(let s=0; s<6; s++){
+    const open = noteToMidi(TUNING[s]);
+    for(let f=0; f<=16; f++){
+      const pc = (open + f) % 12;
+      if(pcs.includes(pc) && f>=2 && f<=10) pool.push({s,f,pc});
+    }
+  }
+  const notes = [];
+  for(let i=0;i<8;i++) notes.push(pool[Math.floor(Math.random()*pool.length)]);
+  const rootChoices = pool.filter(n=>n.pc===rootPC);
+  if(rootChoices.length) notes[7] = rootChoices[Math.floor(Math.random()*rootChoices.length)];
+  const strings = [[],[],[],[],[],[]];
+  for(let i=0;i<8;i++){
+    for(let s=0;s<6;s++) strings[5-s].push('---');
+    const n = notes[i];
+    strings[5-n.s][strings[5-n.s].length-1] = (n.f<10?`-${n.f}-`:`${n.f}`);
+  }
+  const names = ['e','B','G','D','A','E'];
+  tabEl.textContent = names.map((nm,i)=> nm+'|'+strings[i].join('')+'|').join('\n')+'\n';
+}
+lickBtn.addEventListener('click', generateLick);
+copyTabBtn.addEventListener('click', ()=> navigator.clipboard.writeText(tabEl.textContent||''));
+
+/* ---------- Backing track (iOS requires a tap) ---------- */
+let actx, master, playing=false, schedulerTimer=null;
+function midiFreq(m){ return 440 * Math.pow(2, (m-69)/12); }
+function playNote(time, midi, dur=0.2, type='sine', gain=0.2){
+  const o = actx.createOscillator();
+  const g = actx.createGain();
+  o.type = type; o.frequency.value = midiFreq(m);
+  o.connect(g); g.connect(master);
+  g.gain.setValueAtTime(0, time);
+  g.gain.linearRampToValueAtTime(gain, time+0.005);
+  g.gain.linearRampToValueAtTime(0.0001, time+dur);
+  o.start(time); o.stop(time+dur+0.01);
+}
+function start(){
+  if(playing) return;
+  actx = new (window.AudioContext||window.webkitAudioContext)();
+  master = actx.createGain(); master.connect(actx.destination); master.gain.value = 0.5;
+  playing = true; schedule();
+}
+function stop(){
+  if(!playing) return;
+  playing=false;
+  if(schedulerTimer) clearTimeout(schedulerTimer);
+  try{ actx.close(); }catch(e){}
+}
+playBtn.addEventListener('click', start);
+stopBtn.addEventListener('click', stop);
+
+function schedule(){
+  if(!playing) return;
+  const bpm = parseInt(tempo.value,10), spb = 60/bpm;
+  const now = actx.currentTime;
+  const key = keySel.value;
+  const degrees = (progSel.value==='I-IV-V')
+    ? ['I','I','I','I','IV','IV','I','I','V','V','I','I']
+    : (progSel.value==='I-V' ? ['I','I','V','V','I','I','V','V'] : ['I','I','I','I','I','I','I','I']);
+  let t = now + 0.05, beatsPerMeasure = 4;
+
+  function degRootMidi(deg){
+    const ROOTS = {
+      'C': {'I': 36, 'IV': 41, 'V': 43},
+      'D': {'I': 38, 'IV': 43, 'V': 45},
+      'E': {'I': 40, 'IV': 45, 'V': 47},
+      'G': {'I': 43, 'IV': 48, 'V': 50},
+      'A': {'I': 45, 'IV': 50, 'V': 52},
+    };
+    const map = ROOTS[key] || ROOTS['G'];
+    return map[deg];
+  }
+
+  const {pcs, rootPC} = buildScaleSet(key, scaleSel.value);
+  // Update fretboard to current chord at the start of scheduling cycle
+  drawFretboard(pcs, rootPC, chordTonesFor(degrees[0], key));
+
+  for(let m=0;m<degrees.length;m++){
+    const deg = degrees[m], root = degRootMidi(deg);
+    for(let beat=0; beat<beatsPerMeasure; beat++){
+      const isBoom = (beat%2===0);
+      if(isBoom){
+        playNote(t, root, 0.12, 'triangle', 0.25); // boom (bass)
+      } else {
+        const chordSet = chordTonesFor(deg, key);
+        const triad = Array.from(chordSet).slice(0,3).map(pc => 52 + ((pc - (52%12) + 12) % 12));
+        triad.forEach((midi,i)=> playNote(t, midi + i*4, 0.08, 'square', 0.12)); // chick (triad)
+      }
+      t += spb;
+    }
+  }
+  // reschedule to keep playing
+  schedulerTimer = setTimeout(schedule, spb * beatsPerMeasure * 1000 * 2);
+}
+</script>
 </body>
 </html>

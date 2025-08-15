@@ -1,0 +1,1 @@
+console.log('Bluegrass Scale Trainer loaded');
